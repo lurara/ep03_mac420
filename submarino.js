@@ -37,8 +37,7 @@ function Cena() {
     this.fundo = new FundoDoMar(FUNDO.cor, FUNDO.alfa);
     this.bola = new Esfera(BOLA.cor, BOLA.alfa);
     this.bola2 = new Esfera(BOLA2.cor, BOLA2.alfa);
-    // this.bola3 = new Esfera(BOLA3.cor, BOLA3.alfa);
-    // this.bola4 = new Esfera(BOLA4.cor, BOLA4.alfa);
+    this.bola3 = new Esfera(BOLA3.cor, BOLA3.alfa);
     this.cubo1 = new Cubo(CUBO1.cor, CUBO1.alfa);
     this.cubo2 = new Cubo(CUBO2.cor, CUBO2.alfa);
     //this.bola.changePos(vec3(1,0,0));
@@ -81,6 +80,16 @@ function Cena() {
         this.bNorm = this.bNorm.concat( b2.bNorm );
         this.bCor = this.bCor.concat( b2.bCor );
         this.objs.push(b2);
+
+        let b3 = this.bola3;
+        b3.init(BOLA3.ndivs, BOLA3.solido);
+        b3.escala = BOLA3.escala;
+        b3.pos    = BOLA3.pos;
+        b3.bufPos = this.bPos.length;  // posição no buffer
+        this.bPos = this.bPos.concat( b3.bPos );
+        this.bNorm = this.bNorm.concat( b3.bNorm );
+        this.bCor = this.bCor.concat( b3.bCor );
+        this.objs.push(b3);
 
         let c1 = this.cubo1;
         c1.init();  // no config.js

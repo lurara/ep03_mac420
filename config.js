@@ -50,6 +50,17 @@ const BOLA2 = {
     escala : vec3(50, 50, 80),
     theta  : vec3(0, 0, 0),
     pos    : vec3(50, 85, 0),
+    cor    : vec4(1, 0.1, 0.1, 1),
+    alfa   : 50.0,
+    ndivs  : 2,
+    solido : true,
+};
+
+const BOLA3 = {
+    escala : vec3(40, 40, 60),
+    theta  : vec3(0, 0, 0),
+    pos    : vec3(80, 100, 100),
+    cor    : vec4(1, 0.1, 0.1, 1),
     alfa   : 50.0,
     ndivs  : 2,
     solido : true,
