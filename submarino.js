@@ -39,6 +39,7 @@ function Cena() {
 
     // inserido no programa base
     this.rodando = true;
+    this.passo = false;
     this.theta = vec3(1,1,0);
 
     this.init = function () {
@@ -129,7 +130,7 @@ function crieInterface() {
     document.getElementById("passo").onclick = function() {
         if(!gCena.rodando) {
             console.log("passo");
-            gCena.theta[gCena.axis] += 1.0;
+            gCena.passo = true;
             render();
         }
     };
@@ -147,12 +148,10 @@ function callbackKeyUp(e) {
             break;
         case 'J':
             console.log('decrementa velocidade');
-            if (gCena.vTrans > -10)
                 gCena.vTrans--;
             break;
         case 'L':
             console.log('incrementa velocidade');
-            if (gCena.vTrans < 10)
                 gCena.vTrans++;
             break;
         case 'W':
@@ -166,16 +165,24 @@ function callbackKeyUp(e) {
             eixo = 0;
             break;
         case 'A':
-            console.log('incrementa yaw');
+            console.log('decrementa yaw');
+            decrementa = true;
+            eixo = 1;
             break;
         case 'D':
-            console.log('decrementa yaw');
+            console.log('incrementa yaw');
+            incrementa =  true;
+            eixo = 1;
             break;
         case 'Z':
             console.log('incrementa row');
+            incrementa =  true;
+            eixo = 2;
             break;
         case 'C':
             console.log('decrementa row');
+            decrementa = true;
+            eixo = 2;
             break;
     }
 
@@ -297,17 +304,20 @@ let eye = CAM.eye;
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    let now = Date.now();    
+    let delta = (now - ultimoT)/1000;
+
     // modelo muda a cada frame da animação
-    if(gCena.rodando) { 
+    if(gCena.rodando || gCena.passo) { 
+
         // mudança na rotação
         if(decrementa) {
-            // if(gCena.theta[EIXO_IND] == 360)
-            //     gCena.theta[EIXO_IND] = 0;
-            // else
             gCena.theta[eixo]++;
+            decrementa = false;
         }
         else if(incrementa) {
             gCena.theta[eixo]--;
+            incrementa = false;
         }
 
         let c_model = mat4();
@@ -319,30 +329,28 @@ function render() {
         let crz = rotateZ(gCena.theta[2]);
         c_model = mult(crz, c_model);
 
-        //gCtx.view = mult(gCtx.view, c_model);
-
-        // atualiza vx, vy, vz
-
         // mudança de velocidade
-        let now = Date.now();    
-        let delta = (now - ultimoT)/1000;
 
         if (gCena.vTrans != 0) {
             gCena.pos = add(gCena.pos, mult(gCena.vTrans*delta, negate(gCena.vz)));
         }
 
-        ultimoT = now;
-
         // atualiza view
         let new_eye = gCena.pos;
         let new_at = add(gCena.pos, gCena.vz);
         let new_up  = gCena.vy;
-        gCtx.view = lookAt( new_eye, new_at, new_up);
 
+        gCtx.view = lookAt( new_eye, new_at, new_up);
         gCtx.view = mult(gCtx.view, c_model);
 
         gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
+
+        if(gCena.passo) {
+            gCena.passo = false;
+        }
     }
+
+    ultimoT = now;
 
     for (let obj of gCena.objs ) {
         var model = mat4();  // identidade
