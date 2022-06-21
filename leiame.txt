@@ -1,4 +1,32 @@
-// passos...
-// criar objetos?
-// mudar posição de todos os objetos quando há translação
-// mudar iluminação 
+Nome: Lara Ayumi Nagamatsu
+NUSP: 9910568
+
+Este é o EP3 da disciplina Introdução à Computação
+Gráfica (MAC0420). Nele, há a simulação da visão de
+um submarino dentro do mar. 
+
+O objetivo deste EP é aparentemente observar as di-
+ferenças de iluminação propiciadas pelo modelo de
+Phong sobre objetos distintos, a partir da navega-
+ção com o submarino. 
+
+Para implementar a visão do submarino, me concentrei
+principalmente na implementação dentro da função de
+renderização. Neste sentido, checo se há alteração 
+nos valores de rotação - e aplico a tal rotação - e
+logo depois faço a translação da câmera, caso vTrans
+seja diferente de 0. A rotação da câmera é aplicada
+a partir das matrizes de transformação de rotação,
+enquanto o cálculo de translação é feito a partir do
+sistema de coordenadas da câmera (aqui, indicados 
+como gCena.vx, gCena.vy e gCena.vz). Mais especifi-
+camente, a translação pode ser calculada a partir da
+distância a se deslocar (vTrans*delta) pelo vetor 
+normalizado da direção da câmera (ou seja, o valor 
+negativo de gCena.vz). A composição dessas mudanças
+é feita primeiro com os novos valores da posição da
+câmera (resultado da translação) e, depois, aplica-
+-se a matriz de rotação.
+
+Os arquivos editados foram os seguintes: 'config.js'
+e 'submarino.js'. 

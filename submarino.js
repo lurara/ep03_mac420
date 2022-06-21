@@ -19,8 +19,12 @@ var gl;        // webgl2
 var gCanvas;   // canvas
 
 var ultimoT = Date.now(); // delta
+
+// variáveis de controle
 var decrementa = false;
 var incrementa = false;
+
+// eixo de rotação alterado
 var eixo = 0;
 
 function Cena() {
@@ -32,7 +36,9 @@ function Cena() {
     this.objs = [];
     this.fundo = new FundoDoMar(FUNDO.cor, FUNDO.alfa);
     this.bola = new Esfera(BOLA.cor, BOLA.alfa);
-    this.bola2 = new Esfera(BOLA.cor, BOLA.alfa);
+    this.bola2 = new Esfera(BOLA2.cor, BOLA2.alfa);
+    // this.bola3 = new Esfera(BOLA3.cor, BOLA3.alfa);
+    // this.bola4 = new Esfera(BOLA4.cor, BOLA4.alfa);
     this.cubo1 = new Cubo(CUBO1.cor, CUBO1.alfa);
     this.cubo2 = new Cubo(CUBO2.cor, CUBO2.alfa);
     //this.bola.changePos(vec3(1,0,0));
@@ -117,6 +123,7 @@ var gCtx = {
 };
 
 // ==================================================================
+// cria interface de botões na página
 function crieInterface() {
     // inicialização 
     document.getElementById("passo").disabled = gCena.rodando;
@@ -136,10 +143,11 @@ function crieInterface() {
     };
 }
 
+
+// controle do submarino pelo teclado
 function callbackKeyUp(e) {
     const keyName = e.key.toUpperCase();
     console.log(keyName);
-    //currentKey = keyName;
 
     switch (keyName) {
         case 'K':
