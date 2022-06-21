@@ -18,6 +18,11 @@
 var gl;        // webgl2
 var gCanvas;   // canvas
 
+var ultimoT = Date.now(); // delta
+var decrementa = false;
+var incrementa = false;
+var eixo = 0;
+
 function Cena() {
     // buffers da cena combinam os buffers dos objetos
     this.bPos = [];
@@ -27,6 +32,14 @@ function Cena() {
     this.objs = [];
     this.fundo = new FundoDoMar(FUNDO.cor, FUNDO.alfa);
     this.bola = new Esfera(BOLA.cor, BOLA.alfa);
+    this.bola2 = new Esfera(BOLA.cor, BOLA.alfa);
+    this.cubo1 = new Cubo(CUBO1.cor, CUBO1.alfa);
+    this.cubo2 = new Cubo(CUBO2.cor, CUBO2.alfa);
+    //this.bola.changePos(vec3(1,0,0));
+
+    // inserido no programa base
+    this.rodando = true;
+    this.theta = vec3(1,1,0);
 
     this.init = function () {
         // prepara e insere o fundo
@@ -44,11 +57,44 @@ function Cena() {
         b.init(BOLA.ndivs, BOLA.solido);
         b.escala = BOLA.escala;
         b.pos    = BOLA.pos;
+        b.theta = vec3(1, 0, 0); // added
         b.bufPos = this.bPos.length;  // posição no buffer
         this.bPos = this.bPos.concat( b.bPos );
         this.bNorm = this.bNorm.concat( b.bNorm );
         this.bCor = this.bCor.concat( b.bCor );
         this.objs.push(b);
+
+        /* new new new */
+        let b2 = this.bola2;
+        b2.init(BOLA2.ndivs, BOLA2.solido);
+        b2.escala = BOLA2.escala;
+        b2.pos    = BOLA2.pos;
+        b2.bufPos = this.bPos.length;  // posição no buffer
+        this.bPos = this.bPos.concat( b2.bPos );
+        this.bNorm = this.bNorm.concat( b2.bNorm );
+        this.bCor = this.bCor.concat( b2.bCor );
+        this.objs.push(b2);
+
+        let c1 = this.cubo1;
+        c1.init();  // no config.js
+        c1.escala = CUBO1.escala;
+        c1.pos    = CUBO1.pos;
+        c1.bufPos = this.bPos.length;  // no começo é zero
+        this.bPos = this.bPos.concat( c1.bPos );
+        this.bNorm = this.bNorm.concat( c1.bNorm );
+        this.bCor = this.bCor.concat( c1.bCor );
+        this.objs.push(c1);
+
+        let c2 = this.cubo2;
+        c2.init();  // no config.js
+        c2.escala = CUBO2.escala;
+        c2.pos    = CUBO2.pos;
+        c2.bufPos = this.bPos.length;  // no começo é zero
+        this.bPos = this.bPos.concat( c2.bPos );
+        this.bNorm = this.bNorm.concat( c2.bNorm );
+        this.bCor = this.bCor.concat( c2.bCor );
+        this.objs.push(c2);
+        /* new new new */
 
         this.np = this.bPos.length;
         console.log("Cena vertices: ", this.np);
@@ -70,6 +116,72 @@ var gCtx = {
 };
 
 // ==================================================================
+function crieInterface() {
+    // inicialização 
+    document.getElementById("passo").disabled = gCena.rodando;
+    
+    // interface
+    document.getElementById("play").onclick = function() {
+        gCena.rodando = !gCena.rodando;
+        document.getElementById("passo").disabled = gCena.rodando;
+    };
+
+    document.getElementById("passo").onclick = function() {
+        if(!gCena.rodando) {
+            console.log("passo");
+            gCena.theta[gCena.axis] += 1.0;
+            render();
+        }
+    };
+}
+
+function callbackKeyUp(e) {
+    const keyName = e.key.toUpperCase();
+    console.log(keyName);
+    //currentKey = keyName;
+
+    switch (keyName) {
+        case 'K':
+            console.log('Pause Sub');
+            gCena.vTrans = 0;
+            break;
+        case 'J':
+            console.log('decrementa velocidade');
+            if (gCena.vTrans > -10)
+                gCena.vTrans--;
+            break;
+        case 'L':
+            console.log('incrementa velocidade');
+            if (gCena.vTrans < 10)
+                gCena.vTrans++;
+            break;
+        case 'W':
+            console.log('incrementa pitch');
+            incrementa =  true;
+            eixo = 0;
+            break;
+        case 'X':
+            console.log('decrementa pitch');
+            decrementa = true;
+            eixo = 0;
+            break;
+        case 'A':
+            console.log('incrementa yaw');
+            break;
+        case 'D':
+            console.log('decrementa yaw');
+            break;
+        case 'Z':
+            console.log('incrementa row');
+            break;
+        case 'C':
+            console.log('decrementa row');
+            break;
+    }
+
+}
+
+
 // chama a main quando terminar de carregar a janela
 window.onload = main;
 
@@ -90,8 +202,22 @@ function main()
     gl.clearColor(COR_CLEAR[0], COR_CLEAR[1], COR_CLEAR[2], COR_CLEAR[3]);
     gl.enable(gl.DEPTH_TEST);
 
+    // Inicialização da posição do submarino
+    gCena.vz = normalize(subtract(CAM.at, CAM.eye));
+    gCena.vx = normalize(cross(gCena.vz, CAM.up));
+    gCena.vy = normalize(cross(gCena.vx, gCena.vz));
+    gCena.pos = CAM.eye;
+    gCena.theta = vec3(0,0,0);
+    gCena.vTrans = 0;
+
+    console.log(gCena.vz, gCena.vx, gCena.vy);
+
     // shaders
     crieShaders();
+
+    // interface
+    crieInterface();
+    window.onkeyup = callbackKeyUp;
 
     // finalmente...
     render();
@@ -167,12 +293,56 @@ function crieShaders() {
  * Usa o shader para desenhar.
  * Assume que os dados já foram carregados e são estáticos.
  */
+let eye = CAM.eye;
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // modelo muda a cada frame da animação
-    if(gCena.rodando) gCena.theta[gCena.axis] += 2.0;
+    if(gCena.rodando) { 
+        // mudança na rotação
+        if(decrementa) {
+            // if(gCena.theta[EIXO_IND] == 360)
+            //     gCena.theta[EIXO_IND] = 0;
+            // else
+            gCena.theta[eixo]++;
+        }
+        else if(incrementa) {
+            gCena.theta[eixo]--;
+        }
 
+        let c_model = mat4();
+
+        let crx = rotateX(gCena.theta[0]);
+        c_model = mult(crx, c_model);
+        let cry = rotateY(gCena.theta[1]);
+        c_model = mult(cry, c_model);
+        let crz = rotateZ(gCena.theta[2]);
+        c_model = mult(crz, c_model);
+
+        //gCtx.view = mult(gCtx.view, c_model);
+
+        // atualiza vx, vy, vz
+
+        // mudança de velocidade
+        let now = Date.now();    
+        let delta = (now - ultimoT)/1000;
+
+        if (gCena.vTrans != 0) {
+            gCena.pos = add(gCena.pos, mult(gCena.vTrans*delta, negate(gCena.vz)));
+        }
+
+        ultimoT = now;
+
+        // atualiza view
+        let new_eye = gCena.pos;
+        let new_at = add(gCena.pos, gCena.vz);
+        let new_up  = gCena.vy;
+        gCtx.view = lookAt( new_eye, new_at, new_up);
+
+        gCtx.view = mult(gCtx.view, c_model);
+
+        gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
+    }
 
     for (let obj of gCena.objs ) {
         var model = mat4();  // identidade
@@ -181,14 +351,19 @@ function render() {
         model[1][1] *= obj.escala[1];
         model[2][2] *= obj.escala[2];
 
+        //obj.theta = gCena.theta;
+
+        // rotaciona
         let rx = rotateX(obj.theta[0]);
         model = mult(rx, model);
-        let ry = rotateX(obj.theta[1]);
+        let ry = rotateY(obj.theta[1]);
         model = mult(ry, model);
-        let rz = rotateX(obj.theta[2]);
+        let rz = rotateZ(obj.theta[2]);
         model = mult(rz, model);
+        //model = mult(rz, mult(rx, ry));
+
         // translação
-        model[0][3] = obj.pos[0];
+        model[0][3] = obj.pos[0]; 
         model[1][3] = obj.pos[1];
         model[2][3] = obj.pos[2];
     
@@ -202,6 +377,8 @@ function render() {
         gl.drawArrays(gl.TRIANGLES, obj.bufPos, obj.np);
     
     };
+
+    window.requestAnimationFrame(render);
 
 };
 

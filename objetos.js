@@ -112,6 +112,7 @@ function Cubo(cor = CUBO_COR, alfa = CUBO_ALFA) {
     this.np  = 0;  // número de posições (vértices)
     this.cor = cor
     this.alfa = alfa;
+    this.tipo = 'cubo';
     // posição, orientaão e escala do objeto    
     this.pos = vec3(0,0,0);
     this.theta = vec3(0,0,0);
@@ -196,6 +197,7 @@ function Esfera(cor = ESFERA_COR, alfa = ESFERA_ALFA) {
     this.np  = 0;  
     this.cor = cor;
     this.alfa = alfa;
+    this.tipo = 'esf';
     // posição, orientaão e escala do objeto    
     this.pos = vec3(0,0,0);
     this.theta = vec3(0,0,0);
@@ -230,6 +232,7 @@ function Esfera(cor = ESFERA_COR, alfa = ESFERA_ALFA) {
         console.log("Esfera num vertices: ", this.np);
     };
 };
+
 
 function dividaTriangulo(ndivs, pos, nor, a, b, c) {
     // Cada nível quebra um triângulo em 4 subtriângulos

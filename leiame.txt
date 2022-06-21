@@ -1,0 +1,4 @@
+// passos...
+// criar objetos?
+// mudar posição de todos os objetos quando há translação
+// mudar iluminação 
