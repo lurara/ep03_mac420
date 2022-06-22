@@ -182,13 +182,13 @@ function callbackKeyUp(e) {
             eixo = 0;
             break;
         case 'A':
-            console.log('decrementa yaw');
-            decrementa = true;
+            console.log('incrementa yaw');
+            incrementa =  true;
             eixo = 1;
             break;
         case 'D':
-            console.log('incrementa yaw');
-            incrementa =  true;
+            console.log('decrementa yaw');
+            decrementa = true;
             eixo = 1;
             break;
         case 'Z':
@@ -328,13 +328,13 @@ function render() {
     if(gCena.rodando || gCena.passo) { 
 
         // mudança na rotação
-        if(decrementa) {
+        if(incrementa) {
             gCena.theta[eixo]++;
-            decrementa = false;
-        }
-        else if(incrementa) {
-            gCena.theta[eixo]--;
             incrementa = false;
+        }
+        else if(decrementa) {
+            gCena.theta[eixo]--;
+            decrementa = false;
         }
 
         let c_model = mat4();
