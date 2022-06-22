@@ -163,11 +163,11 @@ function callbackKeyUp(e) {
             console.log('Pause Sub');
             gCena.vTrans = 0;
             break;
-        case 'J':
+        case 'L':
             console.log('decrementa velocidade');
                 gCena.vTrans--;
             break;
-        case 'L':
+        case 'J':
             console.log('incrementa velocidade');
                 gCena.vTrans++;
             break;
